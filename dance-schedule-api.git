@@ -1,0 +1,107 @@
+from flask import Flask, request, jsonify
+import pandas as pd
+import pdfplumber
+import os
+import threading
+import time
+
+app = Flask(__name__)
+UPLOAD_FOLDER = 'uploads'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# In-memory storage for schedules and real-time updates
+schedules = {}
+notifications = {}
+
+def notify_parents(dancer_id, routine_time):
+    """Simulated notification system"""
+    time.sleep(max(0, routine_time - time.time() - 900))  # Notify 15 min before
+    print(f'Notification: Your child {dancer_id} is performing in 15 minutes!')
+
+@app.route('/')
+def home():
+    return "Dance Competition Schedule API is running!"
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file uploaded'}), 400
+    
+    file = request.files['file']
+    filename = os.path.join(UPLOAD_FOLDER, file.filename)
+    file.save(filename)
+    
+    if filename.endswith('.xlsx') or filename.endswith('.csv'):
+        return parse_excel(filename)
+    elif filename.endswith('.pdf'):
+        return parse_pdf(filename)
+    else:
+        return jsonify({'error': 'Unsupported file format'}), 400
+
+
+def parse_excel(filepath):
+    try:
+        df = pd.read_excel(filepath) if filepath.endswith('.xlsx') else pd.read_csv(filepath)
+        schedules[filepath] = df.to_dict()
+        return jsonify({'message': 'Excel file processed successfully', 'data': schedules[filepath]}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+def parse_pdf(filepath):
+    try:
+        schedule_data = []
+        with pdfplumber.open(filepath) as pdf:
+            for page in pdf.pages:
+                text = page.extract_text()
+                lines = text.split('\n')
+                for line in lines:
+                    parts = [p.strip() for p in line.split('  ') if p.strip()]
+                    if len(parts) >= 6:
+                        schedule_data.append(parts)
+        
+        df = pd.DataFrame(schedule_data)
+        schedules[filepath] = df.to_dict()
+        return jsonify({'message': 'PDF file processed successfully', 'data': schedules[filepath]}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/update_schedule', methods=['POST'])
+def update_schedule():
+    """Allow admins to update schedule timing"""
+    data = request.json
+    filename = data.get('filename')
+    entry_id = data.get('entry_id')
+    new_time = data.get('new_time')
+    
+    if filename not in schedules:
+        return jsonify({'error': 'Schedule file not found'}), 400
+    
+    df = pd.DataFrame(schedules[filename])
+    if entry_id not in df.index:
+        return jsonify({'error': 'Entry ID not found'}), 400
+    
+    df.at[entry_id, 'Time'] = new_time
+    schedules[filename] = df.to_dict()
+    
+    return jsonify({'message': 'Schedule updated successfully', 'data': schedules[filename]}), 200
+
+@app.route('/set_notification', methods=['POST'])
+def set_notification():
+    """Allow users to set notifications for their child's performances"""
+    data = request.json
+    dancer_id = data.get('dancer_id')
+    routine_time = data.get('routine_time')
+    
+    if not dancer_id or not routine_time:
+        return jsonify({'error': 'Missing required fields'}), 400
+    
+    routine_time = time.mktime(time.strptime(routine_time, '%Y-%m-%d %H:%M:%S'))
+    notifications[dancer_id] = routine_time
+    
+    threading.Thread(target=notify_parents, args=(dancer_id, routine_time)).start()
+    
+    return jsonify({'message': f'Notification set for dancer {dancer_id}'}), 200
+
+if __name__ == '__main__':
+    app.run(debug=True)
