@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "CompCoach",
+    "slug": "compcoach",
+    "scheme": "compcoach",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": false,
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#F8F7F4"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.compcoach.app"
+    },
+    "android": {
+      "package": "com.compcoach.app"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-document-picker",
+      "expo-image-picker"
+    ]
+  }
+}

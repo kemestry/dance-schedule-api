@@ -1,0 +1,35 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "composite": false,
+    "noEmit": true,
+    "incremental": false
+  },
+  "include": [
+    "app/competition/[competitionId]/entry/[entryId].tsx",
+    "app/(tabs)/schedule.tsx",
+    "components/**/*.ts",
+    "components/**/*.tsx",
+    "constants/**/*.ts",
+    "hooks/**/*.ts",
+    "hooks/**/*.tsx",
+    "providers/**/*.ts",
+    "providers/**/*.tsx",
+    "services/**/*.ts",
+    "services/**/*.tsx",
+    "types/**/*.ts",
+    "utils/**/*.ts",
+    "utils/**/*.tsx",
+    "expo-env.d.ts",
+    "env.d.ts",
+    "tamagui.config.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "ios",
+    "android",
+    "_parser_backend_hold",
+    "dist",
+    "build"
+  ]
+}

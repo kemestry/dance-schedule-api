@@ -1,0 +1,72 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function competitionDoc(competitionId) {
+      return get(/databases/$(database)/documents/competitions/$(competitionId));
+    }
+
+    function ownsCompetition(competitionId) {
+      return isSignedIn() && competitionDoc(competitionId).data.ownerId == request.auth.uid;
+    }
+
+    function creatingOwnedCompetition() {
+      return isSignedIn()
+        && request.resource.data.ownerId == request.auth.uid;
+    }
+
+    match /competitions/{competitionId} {
+      allow create: if creatingOwnedCompetition();
+      allow read, update, delete: if ownsCompetition(competitionId);
+    }
+
+    match /dancers/{dancerId} {
+      allow create, update: if ownsCompetition(request.resource.data.competitionId);
+      allow read, delete: if ownsCompetition(resource.data.competitionId);
+    }
+
+    match /scheduleEntries/{entryId} {
+      allow create, update: if ownsCompetition(request.resource.data.competitionId);
+      allow read, delete: if ownsCompetition(resource.data.competitionId);
+    }
+
+    match /selectedDancers/{selectionId} {
+      allow create, update: if ownsCompetition(request.resource.data.competitionId);
+      allow read, delete: if ownsCompetition(resource.data.competitionId);
+    }
+
+    match /routineCostumes/{routineCostumeId} {
+      allow create, update: if ownsCompetition(request.resource.data.competitionId);
+      allow read, delete: if ownsCompetition(resource.data.competitionId);
+    }
+
+    match /costumeChecklistItems/{itemId} {
+      allow create, update: if ownsCompetition(request.resource.data.competitionId);
+      allow read, delete: if ownsCompetition(resource.data.competitionId);
+    }
+
+    match /foodWindows/{foodWindowId} {
+      allow create, update: if ownsCompetition(request.resource.data.competitionId);
+      allow read, delete: if ownsCompetition(resource.data.competitionId);
+    }
+
+    match /foodSuggestions/{suggestionId} {
+      allow create, update: if ownsCompetition(request.resource.data.competitionId);
+      allow read, delete: if ownsCompetition(resource.data.competitionId);
+    }
+
+    match /lodgingPlans/{lodgingPlanId} {
+      allow create, update: if ownsCompetition(request.resource.data.competitionId);
+      allow read, delete: if ownsCompetition(resource.data.competitionId);
+    }
+
+    match /assistantCards/{assistantCardId} {
+      allow create, update: if ownsCompetition(request.resource.data.competitionId);
+      allow read, delete: if ownsCompetition(resource.data.competitionId);
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "composite": false,
+    "noEmit": true,
+    "incremental": false
+  },
+  "include": [
+    "app/(tabs)/_layout.tsx",
+    "expo-env.d.ts",
+    "env.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "ios",
+    "android",
+    "_parser_backend_hold",
+    "dist",
+    "build"
+  ]
+}

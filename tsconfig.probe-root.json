@@ -1,0 +1,38 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "composite": false,
+    "noEmit": true,
+    "incremental": false
+  },
+  "include": [
+    "app/_layout.tsx",
+    "app/index.tsx",
+    "components/**/*.ts",
+    "components/**/*.tsx",
+    "config/**/*.ts",
+    "config/**/*.tsx",
+    "constants/**/*.ts",
+    "hooks/**/*.ts",
+    "hooks/**/*.tsx",
+    "providers/**/*.ts",
+    "providers/**/*.tsx",
+    "services/**/*.ts",
+    "services/**/*.tsx",
+    "types/**/*.ts",
+    "utils/**/*.ts",
+    "utils/**/*.tsx",
+    "expo-env.d.ts",
+    "env.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "ios",
+    "android",
+    "_parser_backend_hold",
+    "dist",
+    "build",
+    "app/(tabs)/**",
+    "app/competition/**"
+  ]
+}

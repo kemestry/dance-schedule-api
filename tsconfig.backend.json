@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": true,
+    "strict": false,
+    "skipLibCheck": true,
+    "incremental": true,
+    "tsBuildInfoFile": ".tsbuildinfo/backend.tsbuildinfo"
+  },
+  "include": [
+    "_parser_backend_hold/src/**/*.mjs"
+  ],
+  "exclude": [
+    "node_modules",
+    "_parser_backend_hold/_node_modules_hold"
+  ]
+}
